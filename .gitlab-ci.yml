@@ -1,0 +1,34 @@
+stages:
+  - deploy
+
+dev_deploy:
+  stage: deploy
+  script:
+    - cd /home/www/dev.apm-turbodom.ru/api
+    - git fetch
+    - git checkout dev
+    - git pull
+    - composer install --optimize-autoloader --no-dev
+    - php artisan optimize:clear
+    - php artisan migrate --force
+    - php artisan queue:restart
+  only:
+    - dev
+  tags:
+    - runner
+
+prod_deploy:
+  stage: deploy
+  script:
+    - cd /home/www/apm-turbodom.ru/api
+    - git fetch
+    - git checkout main
+    - git pull
+    - composer install --optimize-autoloader --no-dev
+    - php artisan optimize:clear
+    - php artisan migrate --force
+    - php artisan queue:restart
+  only:
+    - main
+  tags:
+    - runner
